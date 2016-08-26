@@ -8,12 +8,12 @@ RUN echo "export PS1='\e[1;31m\]\u@\h:\w\\$\[\e[0m\] '" >> /root/.bashrc
 RUN apt-get update
 
 # Runit
-RUN apt-get install -y runit
+RUN apt-get install -y --no-install-recommends runit
 CMD export > /etc/envvars && /usr/sbin/runsvdir-start
 RUN echo 'export > /etc/envvars' >> /root/.bashrc
 
 # Utilities
-RUN apt-get install -y vim less net-tools inetutils-ping wget curl git telnet nmap socat dnsutils netcat tree htop unzip sudo software-properties-common jq psmisc
+RUN apt-get install -y --no-install-recommends vim less net-tools inetutils-ping wget curl git telnet nmap socat dnsutils netcat tree htop unzip sudo software-properties-common jq psmisc iproute
 
 #Install Oracle Java 8
 RUN add-apt-repository ppa:webupd8team/java -y && \
@@ -25,8 +25,10 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 #Spark
 RUN wget -O - http://d3kbcqa49mib13.cloudfront.net/spark-1.6.2-bin-hadoop2.6.tgz | tar zx
 
+#Docker client only
+RUN wget -O - https://get.docker.com/builds/Linux/x86_64/docker-1.11.1.tgz | tar zx -C /usr/local/bin --strip-components=1 docker/docker
+
 # Add runit services
 COPY sv /etc/service
 ARG BUILD_INFO
 LABEL BUILD_INFO=$BUILD_INFO
-
